@@ -2,6 +2,9 @@
 
 package lesson1
 
+import jdk.jfr.Unsigned
+import java.io.File
+
 /**
  * Сортировка времён
  *
@@ -74,15 +77,15 @@ fun sortAddresses(inputName: String, outputName: String) {
  *
  * Во входном файле заданы температуры различных участков абстрактной планеты с точностью до десятых градуса.
  * Температуры могут изменяться в диапазоне от -273.0 до +500.0.
- * Например:
- *
- * 24.7
+ * Например:24.7
  * -12.6
  * 121.3
  * -98.4
  * 99.5
  * -12.6
  * 11.0
+ *
+ *
  *
  * Количество строк в файле может достигать ста миллионов.
  * Вывести строки в выходной файл, отсортировав их по возрастанию температуры.
@@ -97,8 +100,34 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 121.3
  */
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    /*
+    Время: O(n) + O(sorted()) + O(m)
+    Память: O(m)
+    Где m - количество уникальных температур
+    */
+
+    val numberOfEntries = mutableMapOf<Float, Int>()
+
+    val writer = File(outputName).bufferedWriter()
+
+    for (line in File(inputName).readLines()) {
+        val number = line.toFloat()
+        if (!numberOfEntries.containsKey(number)) {
+            numberOfEntries[number] = 1
+        } else {
+            numberOfEntries[number] = numberOfEntries[number]!! + 1
+        }
+    }
+
+    for (i in numberOfEntries.keys.sorted()) {
+        for (j in 0 until numberOfEntries[i]!!) {
+            writer.write("%.1f\n".format(i).replace(',', '.'))
+        }
+    }
+
+    writer.close()
 }
+
 
 /**
  * Сортировка последовательности
@@ -147,7 +176,32 @@ fun sortSequence(inputName: String, outputName: String) {
  *
  * Результат: second = [1 3 4 9 9 13 15 20 23 28]
  */
-fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
-    TODO()
+fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>): Array<T?> {
+    /*
+    Время: O(n + m)
+    Память: O(1)
+    Где n и m - размеры массивов
+    */
+
+    var firstIndex = 0
+    var secondIndex = first.size
+    var resultIndex = 0
+
+    while (firstIndex < first.size && secondIndex < second.size) {
+        if (second[secondIndex] == null || first[firstIndex] < second[secondIndex]!!) {
+            second[resultIndex] = first[firstIndex]
+            firstIndex++
+        } else {
+            second[resultIndex] = second[secondIndex]
+            secondIndex++
+        }
+        resultIndex++
+    }
+    if (secondIndex == second.size) {
+        for (i in 0 until first.size - firstIndex) {
+            second[resultIndex + i] = first[firstIndex + i]
+        }
+    }
+    return second
 }
 
