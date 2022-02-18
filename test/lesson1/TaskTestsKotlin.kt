@@ -32,6 +32,10 @@ class TaskTestsKotlin : AbstractTaskTests() {
     @Test
     @Tag("4")
     fun testSortSequence() {
+
+        lesson1.sortSequence("./test/lesson1/empty.txt", "./test/lesson1/outputEmpty.txt")
+        assertFileContent("./test/lesson1/outputEmpty.txt", "")
+
         sortSequence { inputName, outputName -> sortSequence(inputName, outputName) }
     }
 

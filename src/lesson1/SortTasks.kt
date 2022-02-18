@@ -159,7 +159,41 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  */
 fun sortSequence(inputName: String, outputName: String) {
-    TODO()
+
+    val numberOfEntries = mutableMapOf<Int, Int>()
+
+    val writer = File(outputName).bufferedWriter()
+
+    for (line in File(inputName).readLines()) {
+        val number = line.toInt()
+        if (!numberOfEntries.containsKey(number)) {
+            numberOfEntries[number] = 1
+        } else {
+            numberOfEntries[number] = numberOfEntries[number]!! + 1
+        }
+    }
+
+    var mostCountedNumber = 0 to 0
+    numberOfEntries.forEach { (key, value) ->
+        if (value > mostCountedNumber.second || (value == mostCountedNumber.second && key < mostCountedNumber.first)) {
+            mostCountedNumber = key to value
+        }
+    }
+
+    val minNumber = mostCountedNumber.first
+    val minNumberStr = minNumber.toString()
+
+    for (line in File(inputName).readLines()) {
+        if (line != minNumberStr) {
+            writer.write(line + "\n")
+        }
+    }
+
+    for (i in 0 until mostCountedNumber.second) {
+        writer.write(minNumberStr + "\n")
+    }
+
+    writer.close()
 }
 
 /**
