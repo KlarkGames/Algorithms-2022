@@ -8,6 +8,7 @@ import java.io.File
 import java.util.*
 import kotlin.math.abs
 import kotlin.system.measureNanoTime
+import kotlin.test.assertTrue
 
 abstract class AbstractTaskTests : AbstractFileTests() {
 
@@ -133,6 +134,12 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         try {
             sortTemperatures("input/empty.txt", "temp.txt")
             assertFileContent("temp.txt", "")
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            lesson1.sortTemperatures("./input/temp_in2.txt", "temp.txt")
+            assertFileContent("./input/temp_out2.txt", File("temp.txt").readText())
         } finally {
             File("temp.txt").delete()
         }
@@ -296,6 +303,12 @@ abstract class AbstractTaskTests : AbstractFileTests() {
             File("temp.txt").delete()
         }
         try {
+            sortSequence("input/seq_in6.txt", "temp.txt")
+            assertFileContent("temp.txt", File("input/seq_out6.txt").readText())
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
             sortSequence("input/empty.txt", "temp.txt")
             assertFileContent("temp.txt", "")
         } finally {
@@ -347,9 +360,18 @@ abstract class AbstractTaskTests : AbstractFileTests() {
     }
 
     protected fun mergeArrays(mergeArrays: (Array<Int>, Array<Int?>) -> Unit) {
-        val result = arrayOf(null, null, null, null, null, 1, 3, 9, 13, 18, 23)
-        mergeArrays(arrayOf(4, 9, 15, 20, 23), result)
-        assertArrayEquals(arrayOf(1, 3, 4, 9, 9, 13, 15, 18, 20, 23, 23), result)
+        val result1 = arrayOf(null, null, null, null, null, 1, 3, 9, 13, 18, 23)
+        mergeArrays(arrayOf(4, 9, 15, 20, 23), result1)
+        assertArrayEquals(arrayOf(1, 3, 4, 9, 9, 13, 15, 18, 20, 23, 23), result1)
+
+        val result2 = arrayOf<Int?>()
+        mergeArrays(arrayOf<Int>(), result2)
+        assertArrayEquals(arrayOf<Int>(), result2)
+
+        val result3 = arrayOf(null, null, null, null, 1, 2, 3, 4)
+        mergeArrays(arrayOf(5, 6, 7, 8), result3)
+        assertArrayEquals(arrayOf(1, 2, 3, 4, 5, 6, 7, 8), result3)
+
 
         fun testGeneratedArrays(
             firstSize: Int,

@@ -101,12 +101,12 @@ fun sortAddresses(inputName: String, outputName: String) {
  */
 fun sortTemperatures(inputName: String, outputName: String) {
     /*
-    Время: O(n) + O(sorted()) + O(m)
+    Время: O(n) + O(m)
     Память: O(m)
     Где m - количество уникальных температур
     */
 
-    val numberOfEntries = mutableMapOf<Float, Int>()
+    val numberOfEntries = sortedMapOf<Float, Int>()
 
     val writer = File(outputName).bufferedWriter()
 
@@ -119,7 +119,7 @@ fun sortTemperatures(inputName: String, outputName: String) {
         }
     }
 
-    for (i in numberOfEntries.keys.sorted()) {
+    for (i in numberOfEntries.keys) {
         for (j in 0 until numberOfEntries[i]!!) {
             writer.write("%.1f\n".format(i).replace(',', '.'))
         }
@@ -159,6 +159,12 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  */
 fun sortSequence(inputName: String, outputName: String) {
+    /*
+    Время: O(n) + O(m)
+    Память: O(m)
+    Где m - количество уникальных значений
+    */
+
 
     val numberOfEntries = mutableMapOf<Int, Int>()
 
