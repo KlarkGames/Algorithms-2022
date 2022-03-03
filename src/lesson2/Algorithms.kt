@@ -105,7 +105,6 @@ fun longestCommonSubstring(first: String, second: String): String {
         wordMatrix += Array(first.length) { 0 }
     }
 
-    println()
     var matrixMaximum = 0
     var matrixMaximumIndex = 0
 
