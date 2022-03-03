@@ -95,7 +95,39 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * вернуть ту из них, которая встречается раньше в строке first.
  */
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    /*
+    Время: O(n * m)
+    Память: O(m + n)
+    Где m и n - длины слов
+    */
+    var wordMatrix = arrayOf<Array<Int>>()
+    for (i in second.indices) {
+        wordMatrix += Array(first.length) { 0 }
+    }
+
+    println()
+    var matrixMaximum = 0
+    var matrixMaximumIndex = 0
+
+    for (i in second.indices) {
+        for (j in first.indices) {
+            if (second[i] != first[j]) {
+                continue
+            }
+
+            wordMatrix[i][j] = wordMatrix.getOrElse(i - 1) { arrayOf() }.getOrElse(j - 1) { 0 } + 1
+            if (wordMatrix[i][j] >= matrixMaximum) {
+                matrixMaximum = wordMatrix[i][j]
+                matrixMaximumIndex = i
+            }
+        }
+    }
+
+    if (matrixMaximum > 0) {
+        return second.substring(matrixMaximumIndex - matrixMaximum + 1, matrixMaximumIndex + 1)
+    }
+    return ""
+
 }
 
 /**
@@ -109,5 +141,24 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Единица простым числом не считается.
  */
 fun calcPrimesNumber(limit: Int): Int {
-    TODO()
+    /*
+    Время: O(nlog(logn))
+    Память: O(n)
+    */
+    if (limit <= 1) return 0
+    val end = kotlin.math.sqrt(limit.toDouble()).toInt()
+
+    val isNumberSimple = MutableList(limit + 1) { true }
+
+    isNumberSimple[0] = false
+    isNumberSimple[1] = false
+
+    for (i in 2..end) {
+        for (j in i..limit step i) {
+            if (j != i && j % i == 0) isNumberSimple[j] = false
+        }
+    }
+
+    return isNumberSimple.count { it }
 }
+
