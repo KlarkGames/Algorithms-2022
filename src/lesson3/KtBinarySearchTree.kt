@@ -1,6 +1,7 @@
 package lesson3
 
 import java.util.*
+import kotlin.NoSuchElementException
 import kotlin.math.max
 
 // attention: Comparable is supported but Comparator is not
@@ -9,8 +10,17 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
     private class Node<T>(
         val value: T
     ) {
+        var parent: Node<T>? = null
         var left: Node<T>? = null
         var right: Node<T>? = null
+
+        fun copy(): Node<T> {
+            val newNode = Node(this.value)
+            newNode.left = this.left
+            newNode.right = this.right
+            newNode.parent = this.parent
+            return newNode
+        }
     }
 
     private var root: Node<T>? = null
@@ -35,6 +45,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         return closest != null && element.compareTo(closest.value) == 0
     }
 
+
     /**
      * Добавление элемента в дерево
      *
@@ -57,10 +68,12 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
             comparison < 0 -> {
                 assert(closest.left == null)
                 closest.left = newNode
+                newNode.parent = closest
             }
             else -> {
                 assert(closest.right == null)
                 closest.right = newNode
+                newNode.parent = closest
             }
         }
         size++
@@ -80,7 +93,57 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      * Средняя
      */
     override fun remove(element: T): Boolean {
-        TODO()
+        /*
+        Время: O(h)
+        Память: O(1)
+        Где h - высота дерева
+        */
+        var current = find(element)
+        val parent = current?.parent
+        if (current == null || current.value != element) return false
+
+        val newPoint = current.right?.let { find(it, current!!.value) }
+
+        //Use copies as info about previous conditions
+        val curCopy = current.copy()
+        val newPointCopy = newPoint?.copy()
+
+        // If current doesn't have the right branch
+        if (newPoint == null) {
+            when {
+                parent?.right == current -> parent.right = curCopy.left
+                parent?.left == current -> parent.left = curCopy.left
+            }
+            current.left?.parent = parent
+
+            if (root == current) root = curCopy.left
+
+        } else {
+            //Deleting newPoint from the old place
+            //New point doesn't have the left branch
+            newPoint.parent?.left = newPointCopy?.right
+            newPoint.right?.parent = newPointCopy?.parent
+
+            //Placing newPoint to the current point place
+            when {
+                parent?.right == current -> parent.right = newPoint
+                parent?.left == current -> parent.left = newPoint
+            }
+            newPoint.parent = curCopy.parent
+            newPoint.left = curCopy.left
+
+            current.left?.parent = newPoint
+            if (current.right != newPoint) {
+                newPoint.right = curCopy.right
+                current.right?.parent = newPoint
+            }
+
+            if (root == current) root = newPoint
+        }
+
+        current = null
+        size--
+        return true
     }
 
     override fun comparator(): Comparator<in T>? =
@@ -90,6 +153,8 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         BinarySearchTreeIterator()
 
     inner class BinarySearchTreeIterator internal constructor() : MutableIterator<T> {
+
+        private var current: Node<T> = find(last()) ?: throw kotlin.NoSuchElementException()
 
         /**
          * Проверка наличия следующего элемента
@@ -102,8 +167,8 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          * Средняя
          */
         override fun hasNext(): Boolean {
-            // TODO
-            throw NotImplementedError()
+            if (current.value < last()) return true
+            return false
         }
 
         /**

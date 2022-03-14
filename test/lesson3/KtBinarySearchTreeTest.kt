@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 
 class KtBinarySearchTreeTest : AbstractBinarySearchTreeTest() {
 
-    override fun create(): CheckableSortedSet<Int> =
+    override fun <T : Comparable<T>> create(): CheckableSortedSet<T> =
         KtBinarySearchTree()
 
     @Test
@@ -30,6 +30,7 @@ class KtBinarySearchTreeTest : AbstractBinarySearchTreeTest() {
     @Tag("5")
     fun removeTest() {
         doRemoveTest()
+        doRemoveCharTest()
     }
 
     @Test

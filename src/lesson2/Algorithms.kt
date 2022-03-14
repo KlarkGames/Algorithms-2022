@@ -100,9 +100,9 @@ fun longestCommonSubstring(first: String, second: String): String {
     Память: O(m + n)
     Где m и n - длины слов
     */
-    var wordMatrix = arrayOf<Array<Int>>()
+    val wordMatrix = arrayOf<IntArray>()
     for (i in second.indices) {
-        wordMatrix += Array(first.length) { 0 }
+        wordMatrix.plus(IntArray(first.length) { 0 })
     }
 
     var matrixMaximum = 0
@@ -114,7 +114,7 @@ fun longestCommonSubstring(first: String, second: String): String {
                 continue
             }
 
-            wordMatrix[i][j] = wordMatrix.getOrElse(i - 1) { arrayOf() }.getOrElse(j - 1) { 0 } + 1
+            wordMatrix[i][j] = wordMatrix.getOrElse(i - 1) { intArrayOf() }.getOrElse(j - 1) { 0 } + 1
             if (wordMatrix[i][j] >= matrixMaximum) {
                 matrixMaximum = wordMatrix[i][j]
                 matrixMaximumIndex = i

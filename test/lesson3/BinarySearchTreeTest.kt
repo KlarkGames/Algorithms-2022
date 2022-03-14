@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 
 class BinarySearchTreeTest : AbstractBinarySearchTreeTest() {
 
-    override fun create(): CheckableSortedSet<Int> =
+    override fun <T : Comparable<T>> create(): CheckableSortedSet<T> =
         BinarySearchTree()
 
     @Test
