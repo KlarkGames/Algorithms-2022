@@ -37,6 +37,7 @@ class KtBinarySearchTreeTest : AbstractBinarySearchTreeTest() {
     @Tag("5")
     fun iteratorTest() {
         doIteratorTest()
+        doIteratorCharTest()
     }
 
     @Test

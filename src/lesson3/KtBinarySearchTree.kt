@@ -153,8 +153,20 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         BinarySearchTreeIterator()
 
     inner class BinarySearchTreeIterator internal constructor() : MutableIterator<T> {
+        private val nodeList = mutableListOf<T>()
+        private var index = -1 //This makes haveNext() returns True to 1 element list
+        private var lastIndex = 0
 
-        private var current: Node<T> = find(last()) ?: throw kotlin.NoSuchElementException()
+        init {
+            connectSubTree(root)
+        }
+
+        private fun connectSubTree(node: Node<T>?) {
+            if (node == null) return
+            connectSubTree(node.left)
+            nodeList.add(node.value)
+            connectSubTree(node.right)
+        }
 
         /**
          * Проверка наличия следующего элемента
@@ -166,10 +178,11 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Средняя
          */
-        override fun hasNext(): Boolean {
-            if (current.value < last()) return true
-            return false
-        }
+        override fun hasNext(): Boolean = this.index < this.nodeList.size - 1
+        /*
+        Время: O(1)
+        Память: O(1)
+        */
 
         /**
          * Получение следующего элемента
@@ -185,8 +198,13 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          * Средняя
          */
         override fun next(): T {
-            // TODO
-            throw NotImplementedError()
+            /*
+            Время: O(N)
+            Память: O(1)
+            */
+            if (!hasNext()) throw NoSuchElementException()
+            index++
+            return nodeList[index]
         }
 
         /**
@@ -202,8 +220,15 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          * Сложная
          */
         override fun remove() {
-            // TODO
-            throw NotImplementedError()
+            /*
+            Время: O(N)
+            Память: O(1)
+            */
+            if (index == lastIndex - 1) throw IllegalStateException()
+            remove(nodeList[index])
+            nodeList.removeAt(index)
+            lastIndex = index
+            index--
         }
 
     }

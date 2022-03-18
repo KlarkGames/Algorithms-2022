@@ -266,6 +266,49 @@ abstract class AbstractBinarySearchTreeTest {
         }
     }
 
+    protected fun doIteratorCharTest() {
+        implementationTest { create<Int>().iterator().hasNext() }
+        implementationTest { create<Int>().iterator().next() }
+        val letters = (('a'..'z') + ('A'..'Z') + ('0'..'9'))
+        for (iteration in 1..100) {
+            val controlSet = TreeSet<Char>()
+            for (i in 1..20) {
+                controlSet.add(letters.random())
+            }
+            println("Control set: $controlSet")
+            val binarySet = create<Char>()
+            assertFalse(
+                binarySet.iterator().hasNext(),
+                "Iterator of an empty tree should not have any next elements."
+            )
+            for (element in controlSet) {
+                binarySet += element
+            }
+            val iterator1 = binarySet.iterator()
+            val iterator2 = binarySet.iterator()
+            println("Checking if calling hasNext() changes the state of the iterator...")
+            while (iterator1.hasNext()) {
+                assertEquals(
+                    iterator2.next(), iterator1.next(),
+                    "Calling BinarySearchTreeIterator.hasNext() changes the state of the iterator."
+                )
+            }
+            val controlIter = controlSet.iterator()
+            val binaryIter = binarySet.iterator()
+            println("Checking if the iterator traverses the tree correctly...")
+            while (controlIter.hasNext()) {
+                assertEquals(
+                    controlIter.next(), binaryIter.next(),
+                    "BinarySearchTreeIterator doesn't traverse the tree correctly."
+                )
+            }
+            assertFailsWith<NoSuchElementException>("Something was supposedly returned after the elements ended") {
+                binaryIter.next()
+            }
+            println("All clear!")
+        }
+    }
+
     protected fun doIteratorRemoveTest() {
         implementationTest { create<Int>().iterator().remove() }
         val random = Random()
@@ -328,6 +371,11 @@ abstract class AbstractBinarySearchTreeTest {
                     controlSet.contains(element),
                     "The tree has the element $element that is not in control set."
                 )
+            }
+            val checkNullIterator = binarySet.iterator()
+            while (checkNullIterator.hasNext()) {
+                val element = checkNullIterator.next()
+                assertNotNull(element, "BinarySearchTreeIterator contains null elements after removing")
             }
             println("All clear!")
         }
