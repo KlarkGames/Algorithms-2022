@@ -94,7 +94,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      */
     override fun remove(element: T): Boolean {
         /*
-        Время: O(h)
+        Время: O(n)
         Память: O(1)
         Где h - высота дерева
         */
@@ -199,7 +199,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          */
         override fun next(): T {
             /*
-            Время: O(N)
+            Время: O(1)
             Память: O(1)
             */
             if (!hasNext()) throw NoSuchElementException()
