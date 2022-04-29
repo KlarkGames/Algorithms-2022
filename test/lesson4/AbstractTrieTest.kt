@@ -108,6 +108,44 @@ abstract class AbstractTrieTest {
             assertFailsWith<NoSuchElementException>("Something was supposedly returned after the elements ended") {
                 trieIter.next()
             }
+        }
+    }
+
+    protected fun doIterationAfterRemovingTest() {
+        val random = Random()
+        for (iteration in 1..100) {
+            val controlSet = sortedSetOf<String>()
+            for (i in 1..15) {
+                val string = random.nextString("abcdefgh", 1, 15)
+                controlSet.add(string)
+            }
+            println("Control set: $controlSet")
+            val trieSet = create()
+            for (element in controlSet) {
+                trieSet += element
+            }
+            val removedIter = trieSet.iterator()
+            val removedValue = controlSet.random()
+            println("Removing element $removedValue")
+            trieSet.remove(removedValue)
+            println("Checking if removing element changes iteratior's behavior")
+            var counter = trieSet.size
+            while (removedIter.hasNext()) {
+                controlSet.remove(removedIter.next())
+                counter--
+            }
+            assertEquals(
+                0, counter,
+                "TrieIterator.remove() changed iterator position: ${abs(counter)} elements were ${if (counter > 0) "skipped" else "revisited"}."
+            )
+            assertEquals(
+                controlSet.size, 1,
+                "TrieIterator doesn't contain ${controlSet.size - 1} elements"
+            )
+            assertTrue(
+                controlSet.contains(removedValue),
+                "TrieIterator contains the deleted value $removedValue"
+            )
             println("All clear!")
         }
     }

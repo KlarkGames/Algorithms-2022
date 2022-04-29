@@ -1,6 +1,7 @@
 package lesson4
 
 import java.util.*
+import kotlin.NoSuchElementException
 
 /**
  * Префиксное дерево для строк
@@ -22,6 +23,13 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
     }
 
     private fun String.withZero() = this + 0.toChar()
+
+    private fun String.chop(): String {
+        if (this.isEmpty()) {
+            return ""
+        }
+        return this.substring(0, this.length - 1)
+    }
 
     private fun findNode(element: String): Node? {
         var current = root
@@ -71,7 +79,73 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
      * Сложная
      */
     override fun iterator(): MutableIterator<String> {
-        TODO()
+        return TrieIterator()
     }
+
+    inner class TrieIterator internal constructor() : MutableIterator<String> {
+        private val startPoint = Node()
+        private val pointStack = Stack<Pair<Node, Int>>() // Hub is a Node with more than one child
+        private var currentPoint = startPoint
+        private var currentString = ""
+        private var index = 0
+        private var wordsCount = 0
+
+        init {
+            connectRoot(root)
+        }
+
+        private fun connectRoot(root: Node) {
+            startPoint.children.putAll(root.children)
+            pointStack.push(Pair(startPoint, 0))
+        }
+
+        override fun hasNext(): Boolean = wordsCount < size
+
+        override fun next(): String {
+            /*
+            Время: O(N)
+            Память: O(N)
+            */
+            while (hasNext()) {
+                currentPoint = pointStack.peek().first
+                index = pointStack.peek().second
+
+                if (index == currentPoint.children.size) {
+                    currentString = currentString.chop()
+                    pointStack.pop()
+                    val previousPoint = pointStack.peek().first
+                    val previousIndex = pointStack.peek().second
+                    pointStack.pop()
+                    pointStack.push(Pair(previousPoint, previousIndex + 1))
+                } else if (currentPoint.children.keys.toMutableList()[index] == 0.toChar()) {
+                    wordsCount ++
+                    pointStack.pop()
+                    pointStack.push(Pair(currentPoint, index + 1))
+                    return currentString
+                } else {
+                    pointStack.push(Pair(currentPoint.children.values.toMutableList()[index], 0))
+                    currentString += currentPoint.children.keys.toMutableList()[index]
+                }
+            }
+            throw NoSuchElementException()
+        }
+
+        override fun remove() {
+            /*
+            Время: O(N)
+            Память: O(1)
+            */
+            if (wordsCount == 0 || !contains(currentString)) {
+                throw IllegalStateException()
+            }
+            val previousPoint = pointStack.peek().first
+            val previousIndex = pointStack.peek().second
+            pointStack.pop()
+            pointStack.push(Pair(previousPoint, previousIndex - 1))
+            wordsCount--
+            remove(currentString)
+        }
+    }
+
 
 }
