@@ -84,7 +84,7 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
 
     inner class TrieIterator internal constructor() : MutableIterator<String> {
         private val startPoint = Node()
-        private val pointStack = Stack<Pair<Node, Int>>() // Hub is a Node with more than one child
+        private val pointStack = Stack<Pair<Node, Int>>()
         private var currentPoint = startPoint
         private var currentString = ""
         private var index = 0
