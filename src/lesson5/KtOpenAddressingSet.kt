@@ -21,17 +21,21 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         return hashCode() and (0x7FFFFFFF shr (31 - bits))
     }
 
+    private class DELETED
+
     /**
      * Проверка, входит ли данный элемент в таблицу
      */
     override fun contains(element: T): Boolean {
-        var index = element.startingIndex()
+        val startingIndex = element.startingIndex()
+        var index = startingIndex
         var current = storage[index]
         while (current != null) {
             if (current == element) {
                 return true
             }
             index = (index + 1) % capacity
+            if (index == startingIndex) break
             current = storage[index]
         }
         return false
@@ -51,7 +55,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         val startingIndex = element.startingIndex()
         var index = startingIndex
         var current = storage[index]
-        while (current != null) {
+        while (current != null && current !is DELETED) {
             if (current == element) {
                 return false
             }
@@ -76,7 +80,26 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      * Средняя
      */
     override fun remove(element: T): Boolean {
-        TODO("not implemented")
+        /*
+            Время: O(N)
+            Память: O(1)
+            */
+        val startingIndex = element.startingIndex()
+        var index = startingIndex
+        var current = storage[index]
+        while (current != null) {
+            if (current == element) {
+                storage[index] = DELETED()
+                size--
+                return true
+            }
+            index = (index + 1) % capacity
+            if (index == startingIndex) {
+                break
+            }
+            current = storage[index]
+        }
+        return false
     }
 
     /**
@@ -90,6 +113,47 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      * Средняя (сложная, если поддержан и remove тоже)
      */
     override fun iterator(): MutableIterator<T> {
-        TODO("not implemented")
+        return HashTableIterator()
+    }
+
+    inner class HashTableIterator internal constructor() : MutableIterator<T> {
+        private var elementCount = 0
+        private var currentIndex = storage.indices.first
+        private var currentElement: Any? = null
+
+        override fun hasNext(): Boolean = elementCount < size
+
+        override fun next(): T {
+            /*
+            Время: O(N)
+            Память: O(1)
+            */
+            while (hasNext()) {
+                currentElement = storage[currentIndex]
+
+                if (currentElement == null || currentElement is DELETED) {
+                    currentIndex++
+                } else {
+                    elementCount++
+                    currentIndex++
+                    return currentElement as T
+                }
+
+            }
+            throw NoSuchElementException()
+        }
+
+        override fun remove() {
+            /*
+            Время: O(1)
+            Память: O(1)
+            */
+            if (currentElement == null || currentElement is DELETED) {
+                throw IllegalStateException()
+            }
+            storage[currentIndex - 1] = DELETED()
+            size--
+            elementCount--
+        }
     }
 }

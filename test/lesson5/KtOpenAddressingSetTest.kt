@@ -19,6 +19,7 @@ class KtOpenAddressingSetTest : AbstractOpenAddressingSetTest() {
     @Tag("7")
     fun removeTest() {
         doRemoveTest()
+        doRemoveAllTest()
     }
 
     @Test
@@ -31,5 +32,6 @@ class KtOpenAddressingSetTest : AbstractOpenAddressingSetTest() {
     @Tag("8")
     fun iteratorRemoveTest() {
         doIteratorRemoveTest()
+        doIteratorRemoveAllTest()
     }
 }
