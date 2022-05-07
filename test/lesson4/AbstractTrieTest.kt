@@ -211,4 +211,47 @@ abstract class AbstractTrieTest {
         }
     }
 
+    protected fun doIteratorRemoveAllTest() {
+        implementationTest { create().iterator().remove() }
+        val random = Random()
+        for (iteration in 1..100) {
+            val controlSet = mutableSetOf<String>()
+            for (i in 1..15) {
+                val string = random.nextString("abcdefgh", 1, 15)
+                controlSet.add(string)
+            }
+            println("Initial set: $controlSet")
+            val trieSet = create()
+            for (element in controlSet) {
+                trieSet += element
+            }
+            println("Control set: $controlSet")
+            val iterator = trieSet.iterator()
+            assertFailsWith<IllegalStateException>("Something was supposedly deleted before the iteration started") {
+                iterator.remove()
+            }
+            var counter = trieSet.size
+            while (iterator.hasNext()) {
+                iterator.next()
+                counter--
+                iterator.remove()
+            }
+            assertEquals(
+                0, counter,
+                "TrieIterator.remove() changed iterator position: ${abs(counter)} elements were ${if (counter > 0) "skipped" else "revisited"}."
+            )
+            assertEquals(
+                0, trieSet.size,
+                "The size of the set is incorrect: was ${trieSet.size}, should've been 0."
+            )
+            for (element in controlSet) {
+                assertFalse(
+                    trieSet.contains(element),
+                    "Trie set doesn't delete the element $element from the control set."
+                )
+            }
+            println("All clear!")
+        }
+    }
+
 }

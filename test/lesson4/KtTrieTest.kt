@@ -25,6 +25,7 @@ class KtTrieTest : AbstractTrieTest() {
     @Tag("8")
     fun iteratorRemoveTest() {
         doIteratorRemoveTest()
+        doIteratorRemoveAllTest()
     }
 
 }

@@ -2,6 +2,8 @@
 
 package lesson6
 
+import java.util.Stack
+
 /**
  * Эйлеров цикл.
  * Средняя
